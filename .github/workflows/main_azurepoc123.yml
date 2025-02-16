@@ -56,4 +56,6 @@ jobs:
         slot-name: 'production'
        # publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_2724331295ee40909d238719cc89575c }}
-        images: 'azurepoc123.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_0cb98d702e6e414ca53b103ef32b826c }}/azurepoc123:${{ github.sha }}'
+        # images: 'azurepoc123.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_0cb98d702e6e414ca53b103ef32b826c }}/azurepoc123:${{ github.sha }}'
+        images: 'azurepoc123.azurecr.io/azurepoc123:${{ github.sha }}'
+
