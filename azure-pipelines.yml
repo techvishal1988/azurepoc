@@ -17,7 +17,7 @@ variables:
   tag: '$(Build.BuildId)'
 
   # Agent VM image name
-  pool: Hosted Agent
+  pool: Azure Pipelines
   vmImageName: 'ubuntu-latest'
 
 stages:
