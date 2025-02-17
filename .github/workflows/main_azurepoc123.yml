@@ -43,11 +43,13 @@ jobs:
           #scope-level: 'managementgroup'
           #azcliversion: latest
       - name: Azure login
-        run: az account show
+        run: |
+           az account show
+           az login
 
-      - name: Deploy to webapp
-        uses: azure/container-apps-deploy-action@v1
-        with: 
-           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
-           resourceGroup: ${{ env.Resource_Group }}
-           containerAppName: ${{ env.CONTAINER_APP_NAME }}
+      #- name: Deploy to webapp
+     #   uses: azure/container-apps-deploy-action@v1
+       # with: 
+          # imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+          # resourceGroup: ${{ env.Resource_Group }}
+          # containerAppName: ${{ env.CONTAINER_APP_NAME }}
