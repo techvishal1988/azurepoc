@@ -31,6 +31,10 @@ jobs:
            push: true
            tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
            file: Dockerfile
+      - name: Azure login
+        run: |
+           az account show
+           az login
       - name: Azure Login Web App
         uses: azure/webapps-deploy@v3
         with:
@@ -42,10 +46,7 @@ jobs:
           #enable-AzPSSession: true
           #scope-level: 'managementgroup'
           #azcliversion: latest
-      - name: Azure login
-        run: |
-           az account show
-           az login
+
 
       - name: Deploy to webapp
         uses: azure/container-apps-deploy-action@v1
