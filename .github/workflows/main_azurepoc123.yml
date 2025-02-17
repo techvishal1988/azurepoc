@@ -51,7 +51,7 @@ jobs:
       - name: Deploy to webapp
         uses: azure/container-apps-deploy-action@v1
         with: 
-           #app-name: azurepoc123
+           app-name: azurepoc123
            imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
            resourceGroup: ${{ env.Resource_Group }}
            containerAppName: ${{ env.CONTAINER_APP_NAME }}
