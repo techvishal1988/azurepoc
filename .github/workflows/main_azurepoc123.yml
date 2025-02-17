@@ -51,7 +51,6 @@ jobs:
           #scope-level: 'managementgroup'
           #azcliversion: latest
 
-
       - name: Deploy to webapp
         uses: azure/container-apps-deploy-action@v1
         with: 
