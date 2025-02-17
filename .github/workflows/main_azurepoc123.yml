@@ -1,61 +1,41 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy container app to Azure Web App - azurepoc123
-
+name: Build and Deploy Docker Image to Azure octopus
 on:
   push:
     branches:
       - main
-  workflow_dispatch:
 env:
-    AZURE_CONTAINER_REGISTRY: azurepoc123
-    CONTAINER_APP_NAME: azurepoc123
-
+  AZURE_CONTAINER_REGISTRY: azurepoc123
+  Resource_Group: cfsh-cc-d-rg02
+  CONTAINER_APP_NAME: azurepoc123
 jobs:
-  build:
-    runs-on: 'ubuntu-latest'
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
-
-    - name: Log in to registry
-      uses: docker/login-action@v2
-      with:
-       # registry: https://azurepoc123.azurecr.io/
-        registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
-        username: ${{ secrets.ACR_NAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
-        #username: ${{ secrets.AzureAppService_ContainerUsername_0cb98d702e6e414ca53b103ef32b826c }}
-        #password: ${{ secrets.AzureAppService_ContainerPassword_42a7fa0a0f0d4755884a2649d0ef5af7 }}
-
-    - name: Build and push container image to registry
-      uses: docker/build-push-action@v3
-      with:
-        push: true
-        tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
-        # tags: azurepoc123.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_0cb98d702e6e414ca53b103ef32b826c }}/azurepoc123:${{ github.sha }}
-        file: ./Dockerfile
-
-  deploy:
+  build-and-deploy:
+    name: Build and Push Docker Image to ACR
     runs-on: ubuntu-latest
-    needs: build
-    environment:
-      name: 'production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
-    - name: Deploy to Azure Web App
-      id: deploy-to-webapp
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'azurepoc123'
-        slot-name: 'production'
-       # publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_2724331295ee40909d238719cc89575c }}
-        # images: 'azurepoc123.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_0cb98d702e6e414ca53b103ef32b826c }}/azurepoc123:${{ github.sha }}'
-        images: 'azurepoc123.azurecr.io/azurepoc123:${{ github.sha }}'
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Login to Azure
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io
+          username: ${{ secrets.ACR_NAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+      - name: PUSH TO ACR
+        uses: docker/build-push-action@v6
+        with:
+           push: true
+           tags: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+           file: Dockerfile
+      - name: Azure Login Web App
+        uses: azure/login@v2
+        with:
+           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Deploy to webapp
+        uses: azure/container-apps-deploy-action@v1
+        with: 
+           imageToDeploy: ${{ env.AZURE_CONTAINER_REGISTRY }}.azurecr.io/${{ env.CONTAINER_APP_NAME }}:${{ github.sha }}
+           resourceGroup: ${{ env.Resource_Group }}
+           containerAppName: ${{ env.CONTAINER_APP_NAME }}
